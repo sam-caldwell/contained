@@ -95,21 +95,23 @@ When ready, the `contained` unit can be deployed to target environments with zer
 
 Security Concerns
 -----------------
-Executing containers with `--privileged` should scare anyone.  But this is mitigated with a few
-environmental precautions.
+Executing containers with `--privileged` should scare anyone.  But this is mitigated with 
+a few environmental precautions.
 
 0. The `contained` wrapper container implements only the bootstrap and healthcheck.  It has
    no other functionality.  It does not interact with the underlying host.
 
-0. ToDo: The `contained` wrapper container runs the child containers with minimal privileges.  In 
+0. The `contained` wrapper container runs the child containers with minimal privileges.  In 
    fact, if network ports are set to zero (0) (default value), `bootstrap.go` will drop the
    network capabilities.
 
-0. ToDo: The wrapper container implements a firewall (iptables) to block access to 169.254.169.254.
+0. ToDo: The `contained` wrapper container implements a firewall (iptables) to block access 
+   to 169.254.169.254.
 
-0. ToDo: The wrapper container implements a firewall (iptables) to block access to standard docker
-   ports.
+0. ToDo: The `contained` wrapper container implements a firewall (iptables) to block access 
+   to standard docker ports.
    
-0. ToDo: The wrapper container implements AppArmor to restrict the privileged container 
+0. ToDo: The `contained` wrapper container implements AppArmor to restrict the privileged
+   container 
 
 0. ToDo: All child containers are executed as non-root users. 
