@@ -85,6 +85,7 @@ type Service struct {
 func main() {
 	if os.Args[1] == "noop" {
 		fmt.Println("OK")
+		os.Exit(0)
 	}
 	fmt.Println("Starting...")
 	go StartHealthCheckServer(Config.HealthCheckAddr)
