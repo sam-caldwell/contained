@@ -25,6 +25,6 @@ prompt_to_setup_remote_repo(){
 #
 }(
     cd """$(dirname "$0")"""
-    git clone git@github.com:sam-caldwell/contained-bootstrap.git
+    #git remote rm origin
     prompt_to_setup_remote_repo
 )
