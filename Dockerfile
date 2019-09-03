@@ -38,13 +38,15 @@ ENV GOPATH /opt/go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 ENV GOHASH='ab0e56ed9c4732a653ed22e232652709afbf573e710f56a07f7fdeca578d62fc *go.tgz'
 
-RUN apk add --no-cache --virtual .build-deps \
+RUN set -eux; \
+    apk update && \
+    apk add --no-cache --virtual .build-deps \
 	    bash \
 		gcc \
 		go \
         musl-dev \
-		openssl \
-		upx
+		openssl && \
+	echo "Packages installed"
 
 RUN set -eux; \
     export \
@@ -69,6 +71,9 @@ RUN set -eux; \
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && \
     chmod -R 777 "$GOPATH"
 
+RUN apk add --no-cache upx || exit 1
+RUN upx --version || exit 1
+
 WORKDIR $GOPATH
 
 # --- --- --- --- --- --- --- --- --- --- --- ---
@@ -81,6 +86,7 @@ FROM build_image AS bootstrap_builder
 
 COPY bootstrap/* /usr/local/src/
 WORKDIR /usr/local/src/
+
 RUN set -eux; \
     ls /usr/local/src && \
     /usr/local/src/build.sh && \
@@ -97,7 +103,8 @@ FROM base_image AS runtime
 
 COPY --from=bootstrap_builder /usr/local/src/build/bootstrap /usr/local/bin/
 
-RUN adduser -s /bin/false -S -D -H -u 1337 -G docker contained
+RUN set -eux; \
+    adduser -s /bin/false -S -D -H -u 1337 -G docker contained
 
 USER contained
 
