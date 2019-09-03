@@ -97,9 +97,9 @@ COPY --from=bootstrap_builder /usr/local/src/build/bootstrap /usr/local/bin/
 
 RUN adduser -s /bin/false -S -D -H -u 1337 -G docker contained
 
-# ToDo: Ensure bootstrap user (contained) has docker privileges.
-#
-#USER contained
+USER contained
+
 WORKDIR /opt/
+
 #ENTRYPOINT [ "/usr/local/bin/bootstrap" ]
 #CMD [ "/usr/local/bin/bootstrap" ]
