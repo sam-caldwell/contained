@@ -44,7 +44,8 @@ RUN apk add --no-cache --virtual .build-deps \
 		gcc \
 		go \
         musl-dev \
-		openssl
+		openssl \
+		upx
 
 RUN export \
 		GOARCH="$(go env GOARCH)" \
