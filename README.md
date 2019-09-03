@@ -77,7 +77,32 @@ Getting Started
     a. Provide a healthcheck for the wrapper container.
     
     b. Start all of the containers named in `bootstrap.go` as configured.
-    
+
+0. To start the environment (in any environment, simply use `docker run --privileged...`).
+   Note that the `contained` container must run as `--privileged` but it will drop privileges 
+   when the child containers are spawned.
+
 At this point `contained` has setup a local development environment which can be iterated 
 upon quickly.  All services run just as they will in pre- and post-production environments. 
 When ready, the `contained` unit can be deployed to target environments with zero-touch.
+
+Security Concerns
+-----------------
+Executing containers with `--privileged` should scare anyone.  But this is mitigated with a few
+environmental precautions.
+
+0. The `contained` wrapper container implements only the bootstrap and healthcheck.  It has
+   no other functionality.  It does not interact with the underlying host.
+
+0. ToDo: The `contained` wrapper container runs the child containers with minimal privileges.  In 
+   fact, if network ports are set to zero (0) (default value), `bootstrap.go` will drop the
+   network capabilities.
+
+0. ToDo: The wrapper container implements a firewall (iptables) to block access to 169.254.169.254.
+
+0. ToDo: The wrapper container implements a firewall (iptables) to block access to standard docker
+   ports.
+   
+0. ToDo: The wrapper container implements AppArmor to restrict the privileged container 
+
+0. ToDo: All child containers are executed as non-root users. 
