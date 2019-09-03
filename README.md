@@ -10,7 +10,7 @@ end here is to facilitate developers being able to deploy a fully functional dev
 environment using the `contained` pattern within minutes.
 
 
-####The Developer Environment Problem
+#### The Developer Environment Problem
 We've all been there.  We start a new project or join a new team/company and spent a
 long time setting up our dev environment to get the work done.  Usually this means following
 some document that is either out of date, poorly written or written with a ton of assumptions
@@ -20,7 +20,7 @@ container that setup the entire environment on your laptop without tainting the 
 machine?
 
 
-####The Deployment Problem: Environment Drift
+#### The Deployment Problem: Environment Drift
 So we've gotten our dev environment up.  We've written code.  We're not a n00b anymore, and
 then we end up on an incident where a bug made it to production because it wasn't caught in
 our dev environment, our integration environment, our staging environment or anywhere before
