@@ -31,7 +31,6 @@ FROM base_image AS build_image
 # See https://golang.org/doc/install/source#environment
 # for documentation on how this thing works...in theory.
 #
-RUN set -eux
 ENV GOLANG_VERSION=1.12.9
 #Warning: Enabling cgo could create a whole set of security risks.
 ENV CGO_ENABLED=0
@@ -47,7 +46,8 @@ RUN apk add --no-cache --virtual .build-deps \
 		openssl \
 		upx
 
-RUN export \
+RUN set -eux; \
+    export \
 		GOARCH="$(go env GOARCH)" \
 		GOHOSTARCH="$(go env GOHOSTARCH)" \
 		GOHOSTOS="$(go env GOHOSTOS)" \
@@ -81,7 +81,8 @@ FROM build_image AS bootstrap_builder
 
 COPY bootstrap/* /usr/local/src/
 WORKDIR /usr/local/src/
-RUN ls /usr/local/src && \
+RUN set -eux; \
+    ls /usr/local/src && \
     /usr/local/src/build.sh && \
     cd / && \
     echo "Build completed."

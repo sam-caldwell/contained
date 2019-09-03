@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 #
 # build.sh
 #
@@ -13,7 +13,17 @@ go test && \
 echo "tests pass...building artifact..." && \
 go build -o "${binary_file}" bootstrap.go && \
 echo "build complete.  Setting executable permissions." && \
+\
 chmod +x "${binary_file}" && \
+\
+echo "Running noop mode to test health of the executable before compression." && \
+${binary_file} noop && \
+\
+echo "Compressing the binary ${binary_file}" && \
+upx ${binary_file} && \
+\
+echo "Running noop mode to test health of the compressed executable." && \
+${binary_file} noop && \
 echo "done." && \
 exit 0
 
