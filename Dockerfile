@@ -17,7 +17,8 @@ RUN [[ ! -e /etc/nsswitch.conf ]] && \
 
 RUN apk update && \
     apk add --no-cache \
-        ca-certificates && \
+        ca-certificates \
+        docker && \
     echo "base image ready."
 
 # --- --- --- --- --- --- --- --- --- --- --- ---
@@ -91,12 +92,14 @@ RUN ls /usr/local/src && \
 # child containers and healthcheck.
 # --- --- --- --- --- --- --- --- --- --- --- ---
 FROM base_image AS runtime
-#
-# ToDo: copy the /usr/local/bin/bootstrap binary in from bootstrap_builder stage.
-# ToDo: Create non-root user uid=1337, gid=1337, user:group='contained:contained'
+
+COPY --from=bootstrap_builder /usr/local/src/build/bootstrap /usr/local/bin/
+
+RUN adduser -s /bin/false -S -D -H -u 1337 -G docker contained
+
 # ToDo: Ensure bootstrap user (contained) has docker privileges.
 #
 #USER contained
 WORKDIR /opt/
-ENTRYPOINT [ "/usr/local/bin/bootstrap" ]
-CMD [ "/usr/local/bin/bootstrap" ]
+#ENTRYPOINT [ "/usr/local/bin/bootstrap" ]
+#CMD [ "/usr/local/bin/bootstrap" ]
