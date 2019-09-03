@@ -79,13 +79,12 @@ Getting Started
 0. The build script will compile `bootstrap.go` into a compressed, stripped binary that has
    two purposes:
    
-    a. Provide a healthcheck for the wrapper container.
+    a. Provide a health check for the wrapper container.
     
     b. Start all of the containers named in `bootstrap.go` as configured.
 
-0. To start the environment (in any environment, simply use `docker run --privileged...`).
-   Note that the `contained` container must run as `--privileged` but it will drop privileges 
-   when the child containers are spawned.
+0. To start the environment, execute `scripts/start.sh` which will start the `contained` container
+   and any child containers specified in the bootstrap.
 
 At this point `contained` has setup a local development environment which can be iterated 
 upon quickly.  All services run just as they will in pre- and post-production environments. 
@@ -97,7 +96,8 @@ Executing containers with `--privileged` should scare anyone.  But this is mitig
 a few environmental precautions.
 
 0. The `contained` wrapper container implements only the bootstrap and healthcheck.  It has
-   no other functionality.  It does not interact with the underlying host.
+   no other functionality.  It does not interact with the underlying host.  There is minimal
+   attack surface for this health check.
 
 0. The `contained` wrapper container runs the child containers with minimal privileges.  In 
    fact, if network ports are set to zero (0) (default value), `bootstrap.go` will drop the
@@ -112,4 +112,4 @@ a few environmental precautions.
 0. ToDo: The `contained` wrapper container implements AppArmor to restrict the privileged
    container 
 
-0. ToDo: All child containers are executed as non-root users. 
+0. All child containers are executed as non-root users. 
