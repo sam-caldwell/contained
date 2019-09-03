@@ -84,7 +84,7 @@ type Service struct {
 
 func main() {
 	if os.Args[1] == "noop" {
-		fmt.Println("OK")
+		fmt.Printf("OK")
 		os.Exit(0)
 	}
 	fmt.Println("Starting...")
