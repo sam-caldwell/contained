@@ -62,9 +62,7 @@ Getting Started
 
     a. Delete the reference to `origin` as the contained repository. 
     
-    b. Clone [contained-bootstrap](git@github.com:sam-caldwell/contained-bootstrap.git)
-    
-    c. Prompt for (y/n) for whether or not you wish you update the `origin` reference to
+    b. Prompt for (y/n) for whether or not you wish you update the `origin` reference to
        your remote repository.  If 'y', the remote repository information will be updated.
        
 0. Next you will open `contained-bootstrap` and edit the `Manifest` in `bootstrap.go` to 
