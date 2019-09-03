@@ -77,7 +77,6 @@ WORKDIR $GOPATH
 # --- --- --- --- --- --- --- --- --- --- --- ---
 FROM build_image AS bootstrap_builder
 
-#ToDo: Merge contained-bootstrap into this repo as a subdirectory.
 COPY bootstrap/* /usr/local/src/
 WORKDIR /usr/local/src/
 RUN ls /usr/local/src && \
