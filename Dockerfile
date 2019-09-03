@@ -4,15 +4,21 @@
 # This dockerfile is the wrapper container at the heart of contained.
 # See README.md for usage.
 #
-
 # --- --- --- --- --- --- --- --- --- --- --- ---
 # base_image is used twice: builder and runtime.
 # This is a very generic stage that can save us
 # a lot of time.
 # --- --- --- --- --- --- --- --- --- --- --- ---
-FROM alpine:latest AS base_image
+FROM alpine:3.10 AS base_image
 
-# ToDo: setup base image
+# Make sure we are setting up name resolution properly.
+RUN [[ ! -e /etc/nsswitch.conf ]] && \
+        echo 'hosts: files dns' > /etc/nsswitch.conf
+
+RUN apk update && \
+    apk add --no-cache \
+        ca-certificates && \
+    echo "base image ready."
 
 # --- --- --- --- --- --- --- --- --- --- --- ---
 # build_image adds golang compilers and such to the
@@ -20,8 +26,48 @@ FROM alpine:latest AS base_image
 # to save time.
 # --- --- --- --- --- --- --- --- --- --- --- ---
 FROM base_image AS build_image
+#
+# See https://golang.org/doc/install/source#environment
+# for documentation on how this thing works...in theory.
+#
+RUN set -eux
+ENV GOLANG_VERSION=1.12.9
+#Warning: Enabling cgo could create a whole set of security risks.
+ENV CGO_ENABLED=0
+ENV GOPATH /opt/go
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+ENV GOHASH='ab0e56ed9c4732a653ed22e232652709afbf573e710f56a07f7fdeca578d62fc *go.tgz'
 
-# ToDo: setup build image (building go stuffs)
+RUN apk add --no-cache --virtual .build-deps \
+	    bash \
+		gcc \
+		go \
+        musl-dev \
+		openssl
+
+RUN export \
+		GOARCH="$(go env GOARCH)" \
+		GOHOSTARCH="$(go env GOHOSTARCH)" \
+		GOHOSTOS="$(go env GOHOSTOS)" \
+		GOOS="$(go env GOOS)" \
+		GOROOT_BOOTSTRAP="$(go env GOROOT)"; \
+	wget -O go.tgz "https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz"; \
+	echo "${GOHASH}" | sha256sum -c -; \
+	tar -C /usr/local -xzf go.tgz; \
+	rm go.tgz; \
+	cd /usr/local/go/src; \
+	./make.bash; \
+	rm -rf \
+		/usr/local/go/pkg/bootstrap \
+		/usr/local/go/pkg/obj; \
+	apk del .build-deps; \
+	export PATH="/usr/local/go/bin:$PATH"; \
+	go version
+
+RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && \
+    chmod -R 777 "$GOPATH"
+
+WORKDIR $GOPATH
 
 # --- --- --- --- --- --- --- --- --- --- --- ---
 # bootstrap_builder tests and compiles the bootstrap.go
@@ -31,11 +77,12 @@ FROM base_image AS build_image
 # --- --- --- --- --- --- --- --- --- --- --- ---
 FROM build_image AS bootstrap_builder
 
-COPY contained-bootstrap/* /opt/
-WORKDIR /opt/
-RUN ./build/build.sh && \
+#ToDo: Merge contained-bootstrap into this repo as a subdirectory.
+COPY bootstrap/* /usr/local/src/
+WORKDIR /usr/local/src/
+RUN ls /usr/local/src && \
+    /usr/local/src/build.sh && \
     cd / && \
-    rm -rf /opt/* && \
     echo "Build completed."
 
 # --- --- --- --- --- --- --- --- --- --- --- ---
@@ -50,7 +97,7 @@ FROM base_image AS runtime
 # ToDo: Create non-root user uid=1337, gid=1337, user:group='contained:contained'
 # ToDo: Ensure bootstrap user (contained) has docker privileges.
 #
-USER contained
+#USER contained
 WORKDIR /opt/
-ENTRYPOINT[ "/usr/local/bin/bootstrap" ]
-CMD[ "/usr/local/bin/bootstrap" ]
+ENTRYPOINT [ "/usr/local/bin/bootstrap" ]
+CMD [ "/usr/local/bin/bootstrap" ]
