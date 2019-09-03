@@ -9,6 +9,7 @@ of container-based applications in bare-metal, cloud or other environments.  The
 end here is to facilitate developers being able to deploy a fully functional development 
 environment using the `contained` pattern within minutes.
 
+
 ####The Developer Environment Problem
 We've all been there.  We start a new project or join a new team/company and spent a
 long time setting up our dev environment to get the work done.  Usually this means following
@@ -17,6 +18,8 @@ that may or may not be readily apparent to a n00b.  Containers addressed
 this a bit for many companies.   But what if you could execute one privileged wrapper 
 container that setup the entire environment on your laptop without tainting the underlying 
 machine?
+
+
 ####The Deployment Problem: Environment Drift
 So we've gotten our dev environment up.  We've written code.  We're not a n00b anymore, and
 then we end up on an incident where a bug made it to production because it wasn't caught in
@@ -27,6 +30,7 @@ not happen this way.  We can do better!  The `contained` project solves this bec
 to prod is exactly what was in pre-production.  This project creates a wrapper container that
 represents everything for a given stack just as it would be in production.  The chances of
 drift are decreased without a bunch of wacky Ruby-based configuration management crap from 2005.
+
 
 Implementation Details
 ----------------------
@@ -41,6 +45,7 @@ one bundle rather than distributing them.  But that also means side-cars stay cl
 the application container and they can be distributed with multiple instances of the wrapper
 as we scale horizontally.  In the end what is important is that the container keeps the 
 environment consistent.  The applications are protected from drift.
+
 
 Getting Started
 ---------------
